@@ -1,3 +1,8 @@
-# voice-lab
-# 介紹
-要達成語音辨識的目的
+# speech recognition
+//to do 
+# System
+//to do 
+# Demo
+//to do 
+# Link
+//to do 
