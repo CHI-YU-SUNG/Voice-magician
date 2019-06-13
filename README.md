@@ -27,6 +27,6 @@
 //to do 
 | Main page | Clock | Record |
 | -------- | -------- | -------- |
-| ![](https://imgur.com/Mj4jp2h)    
+| ![](https://imgur.com/gallery/YSJayCb)     
 ## Link
 //to do 
