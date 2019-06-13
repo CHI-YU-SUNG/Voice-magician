@@ -16,8 +16,8 @@
 //to do
 ### Function
 
-- **Analysis Sleeping status and Best Waking up Time**
-- **Sleep monitoring** (Alarm of no breath while sleeping)
+- **粗體字**
+- **Sleep monitoring** 一般字體
 - Communicate with **APP**
 - **Alarm Clock** Setting 
 - **Music** based on Uart protocol (Supports file umlimited songs)
@@ -25,5 +25,8 @@
 - **CPU Loading** Calculate the power used by the board
 ## Demo
 //to do 
+| Main page | Clock | Record |
+| -------- | -------- | -------- |
+| ![](https://imgur.com/Mj4jp2h)    
 ## Link
 //to do 
