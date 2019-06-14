@@ -1,8 +1,8 @@
 ## speech recognition
 //to do 
 * [Introduction](#introduction)
-	* [Function](#function)
-	* [System Architecture](#system-architecture)
+	* [System](#function)
+	* [to do](#system-architecture)
 	* [APP UI](#app-ui)
 * [Hardware and Software Setup](#hardware-and-software-setup)
 	* [Required Hardware](#required-hardware)
