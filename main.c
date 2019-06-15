@@ -40,13 +40,49 @@
 #error Board isnt supported, check BOARD variable
 #endif
 
+#define COUNT BOARD_CPU_CLOCK/1000
+#define IOTDK_LED_ID		DFSS_GPIO_4B2_ID
+#define IOTDK_LED_PIN		0
+
+volatile static int t0 = 0;
+volatile static int second = 1;
+int state=0;
+
+
 static int16_t input_buffer[INPUT_FRAME_SIZE * INPUT_CHANNELS_NUM * INPUT_BUFFERING_DEPTH];
 static uint32_t frame_position;
 extern uint32_t read_done;
+int test[]={
+    0, 1, 2, 3, 4, 5
+};
+
+/** arc timer 0 interrupt routine */
+static void timer0_isr(void *ptr)
+{
+	timer_int_clear(TIMER_0);
+	t0++;
+}
+
+/** arc timer 0 interrupt delay */
+void timer0_delay_ms(int ms)
+{
+	t0 = 0;
+	//led enable
+
+	while(t0 < ms);
+	{
+		
+	
+	}
+	
+}
+
+
 
 int main(void)
 {
     int16_t *current_frame;
+    int16_t count=0;
 
     pll_fout_config(CORE_FREQ_MHZ);
 
@@ -55,17 +91,34 @@ int main(void)
     /* Start first frame read */
     input_buffer_next_read(input_buffer);
 
+	//timer enable
+	int_disable(INTNO_TIMER0);
+	timer_stop(TIMER_0);
+
+	int_handler_install(INTNO_TIMER0, timer0_isr);
+	int_pri_set(INTNO_TIMER0, INT_PRI_MIN);
+
+	EMBARC_PRINTF("\r\nThis is a example about timer interrupt.\r\n");
+
+	int_enable(INTNO_TIMER0);
+	timer_start(TIMER_0, TIMER_CTRL_IE | TIMER_CTRL_NH, COUNT);
+
     do {
         current_frame = &input_buffer[frame_position * INPUT_FRAME_SIZE * INPUT_CHANNELS_NUM];
-
+        /*current_frame=test[count];
+        count++;
+        if (count==5)
+            count =0;
+        */ 
         while(read_done == 0) {
             //doing nothing
+            EMBARC_PRINTF("\r\nDoes this input exist?  YES\r\n");
         }
 
         if(++frame_position == INPUT_BUFFERING_DEPTH) {
             frame_position = 0;
         }
-
+        
         /* reading next buffer */
         input_buffer_next_read(&input_buffer[frame_position * INPUT_FRAME_SIZE * INPUT_CHANNELS_NUM]);
 
@@ -73,7 +126,10 @@ int main(void)
          * TODO: add data frame processing here, use 'current_frame' pointer
          *  
          *    process(current_frame);
+         *   
          */
+         //EMBARC_PRINTF("\r%d \r\n",*current_frame);
+         //timer0_delay_ms(1000);
     } while(1);
 
 
