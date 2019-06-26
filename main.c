@@ -1,4 +1,4 @@
-/* ------------------------------------------//
+/* ------------------------------------------
  * Copyright (c) 2019, Synopsys, Inc. All rights reserved.
 
  * Redistribution and use in source and binary forms, with or without modification,
