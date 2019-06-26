@@ -126,6 +126,7 @@ int main(void)
          * TODO: add data frame processing here, use 'current_frame' pointer
          *  
          *    process(current_frame);
+         * read("1.wav");
          *   
          */
          //EMBARC_PRINTF("\r%d \r\n",*current_frame);
