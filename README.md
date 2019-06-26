@@ -19,13 +19,13 @@
 這個裝置包含了三個部分：接收、解密、輸出
 - 接收：由RPi接收聲音檔，並將聲音資料傳給ARC
 - 解密：ARC做消噪解密
-- 輸出：喇叭輸出解密後的聲音
+- 輸出：解密後的音訊傳回RPi，再存回電腦播出
 
 ## Hardware and Software Setup
 ### Required Hardware
 - 1 DesignWare ARC IoT Development Kit (IoTDK)
 - 1 Raspberry Pi (RPi)
-- 1 喇叭
+- 1 Notebook
 ### Required Software
 - MobaXterm
 - Digilent Adept software
@@ -33,7 +33,6 @@
 1. 本裝置會由電腦傳送音檔至RPi，再將音訊資料傳至ARC
 	- 將RPi的電源線接至電腦的USB孔
 	- 將RPi的UART0_TXD與ARC的I2S_RX
-	- 將喇叭接至....
 2. 裝置配置圖
 
 ## User Manual
