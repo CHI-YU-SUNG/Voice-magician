@@ -2,7 +2,7 @@
 資訊流通的世代裡，訊息的隱私和安全性尤屬我們極為關切和注重的議題， 國家要利用科技獲得敵國軍事機密，有心人事不擇手段要竊取公司機密抑或重要的傳輸檔案，為了防止資訊被盜取利用，我們這次研究的目標著重在實現接收遠端傳輸加密後的聲音，並且此聲音是夾帶雜訊且人類無法直接辨別的音源，藉由我們一系列設計IOTDK的開發板，我們得以獲取解密後的音檔，達到秘密傳輸以及不被偷聽的目的。
 * [Introduction](#introduction)
 	* [Function](#function)
-	* [System Architecture](#System-Architecture)
+	* [System Architecture](#system-architecture)
 * [Hardware and Software Setup](#hardware-and-software-setup)
 	* [Required Hardware](#required-hardware)
 	* [Required Software](#required-software)
@@ -10,6 +10,7 @@
 * [User Manual](#user-manual)
 	* [Before Running This Application](#before-running-this-application)
 	* [Run This Application](#run-this-application)
+* [Demo Video](#demo-video)
 
 ## Introduction
 這個裝置能夠將原本用高頻做聲音加密的訊號還原。
@@ -34,10 +35,17 @@
 	- 將RPi的電源線接至電腦的USB孔
 	- 將RPi的UART0_TXD與ARC的I2S_RX
 2. 裝置配置圖
-
+	![alt tag](https://i.imgur.com/GLmFCfa.jpg)
+	
 ## User Manual
 ### Before Running This Application
 下載GitHub上的檔案至電腦中
+### Run This Application
+
+## Demo Video
+[Video]
+
+
 
 - **粗體字**
 - **Sleep monitoring** 一般字體
