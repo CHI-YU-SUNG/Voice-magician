@@ -31,7 +31,7 @@
 - MobaXterm
 - Digilent Adept software
 ### Hardware Connection
-1. 本裝置會由電腦傳送音檔至RPi，再將音訊資料傳至ARC
+1. 本裝置會由電腦傳送音檔至RPi，再將音訊資料傳至ARC做處理後回傳至電腦
 	- 將RPi的電源線接至電腦的USB孔
 	- 將RPi的UART0_TXD與ARC的I2S_RX
 2. 裝置配置圖
@@ -41,7 +41,7 @@
 ### Before Running This Application
 下載GitHub上的檔案至電腦中
 ### Run This Application
-
+//to do
 ## Demo Video
 [Video]
 
