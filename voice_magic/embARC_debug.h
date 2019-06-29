@@ -27,25 +27,75 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
 --------------------------------------------- */
-#include "embARC.h"
-#include "embARC_debug.h"
-#include "embARC_syscalls.c"
 
 /**
- * \brief	Test hardware board without any peripheral
+ * \file
+ * \ingroup EMBARC_DEBUG
+ * \brief necessary definitions of debug
  */
-int main(void)
-{
-	init_stdio_serial();
-	uint8_t rcv_buf[20];
-	int32_t rcv_cnt;
 
-	while (1) {
-		rcv_cnt = stdio_read(rcv_buf, sizeof(rcv_buf));
-		rcv_buf[rcv_cnt] = '\0';
-		if (rcv_cnt) {
-			EMBARC_PRINTF(".wav recevied");
-			EMBARC_PRINTF("%s", rcv_buf);
-		}
-	}
+#ifndef _EMBARC_DEBUG_H_
+#define _EMBARC_DEBUG_H_
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+//comment this to disable exception readable dumping. By doing so could save some code space
+#ifndef CONFIG_ARC_EXCEPTION_DEBUG
+#define CONFIG_ARC_EXCEPTION_DEBUG
+#endif
+
+#ifndef EMBARC_PRINTF
+	#ifdef MID_COMMON
+		#include "xprintf.h"
+		#define EMBARC_PRINTF xprintf
+	#else
+		#include <stdio.h>
+		#define EMBARC_PRINTF printf
+	#endif
+#endif
+
+/*
+ * if you want to use DBG or dbg_printf,
+ * please define DEBUG or DBG_LESS or DBG_MORE before include embARC_debug.h
+ * DEBUG: enable debug print
+ * DBG_LESS: enable less debug msg
+ * DBG_MORE: enable more debug msg
+ **/
+
+#if defined(DEBUG)
+#if defined(DEBUG_HOSTLINK)
+#include <stdio.h>
+#define DBG(fmt, ...)	printf(fmt, ##__VA_ARGS__)
+#else
+#define DBG(fmt, ...)	EMBARC_PRINTF(fmt, ##__VA_ARGS__)
+#endif
+#else
+#define DBG(fmt, ...)
+#endif
+
+#define DBG_LESS_INFO	0x01    /* less debug  messages */
+#define DBG_MORE_INFO	0x02    /* more debug  messages */
+
+
+#if defined (DBG_LESS)
+#define DBG_TYPE		(DBG_LESS_INFO)
+#elif defined (DBG_MORE)
+#define DBG_TYPE		((DBG_LESS_INFO) | (DBG_MORE_INFO))
+#else
+#define DBG_TYPE 		0
+#endif
+
+#if DBG_TYPE > 0
+#define dbg_printf(type, fmt, ...) \
+		if (((type) & DBG_TYPE))  { EMBARC_PRINTF(fmt, ##__VA_ARGS__); }
+#else
+#define dbg_printf(type, fmt, ...)
+#endif
+
+#ifdef __cplusplus
 }
+#endif
+
+#endif /* DEBUG_H_ */

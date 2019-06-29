@@ -27,25 +27,63 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
 --------------------------------------------- */
-#include "embARC.h"
-#include "embARC_debug.h"
-#include "embARC_syscalls.c"
 
 /**
- * \brief	Test hardware board without any peripheral
+ * \file
+ * \ingroup	CORE_ERROR
+ * \brief header files wrapper
  */
-int main(void)
-{
-	init_stdio_serial();
-	uint8_t rcv_buf[20];
-	int32_t rcv_cnt;
+#ifndef _EMBARC_H_
+#define _EMBARC_H_
 
-	while (1) {
-		rcv_cnt = stdio_read(rcv_buf, sizeof(rcv_buf));
-		rcv_buf[rcv_cnt] = '\0';
-		if (rcv_cnt) {
-			EMBARC_PRINTF(".wav recevied");
-			EMBARC_PRINTF("%s", rcv_buf);
-		}
-	}
-}
+/* toolchain definition */
+#include "embARC_toolchain.h"
+
+/* error code related definitions */
+#include "embARC_error.h"
+
+/* ARC HAL */
+#include "arc_builtin.h"
+#include "arc_timer.h"
+#include "arc_exception.h"
+#include "arc_cache.h"
+#include "arc_udma.h"
+#include "arc_mpu.h"
+
+#include "board.h"
+
+#ifdef ENABLE_OS
+#include "os_hal_inc.h"
+#endif
+
+#ifdef MID_COMMON
+#include "console_io.h"
+#include "xprintf.h"
+#endif
+
+/* FatFS header files */
+#ifdef MID_FATFS
+#include "ff.h"
+#include "diskio.h"
+#endif
+
+/* ntshell header files */
+#ifdef MID_NTSHELL
+#include "ntshell_task.h"
+#endif
+
+/* \todo: lwIP header files */
+#ifdef MID_LWIP
+#endif
+
+#ifdef LIB_CLIB
+#include "embARC_syscalls.h"
+#endif
+
+
+/* LIB_SECURESHIELD should be at the end */
+#ifdef LIB_SECURESHIELD
+#include "secureshield_lib.h"
+#endif
+
+#endif	/* _EMBARC_H_ */

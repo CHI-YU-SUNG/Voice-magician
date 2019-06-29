@@ -27,25 +27,55 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
 --------------------------------------------- */
-#include "embARC.h"
-#include "embARC_debug.h"
-#include "embARC_syscalls.c"
 
 /**
- * \brief	Test hardware board without any peripheral
+ * \file
+ * \ingroup ARC_HAL_MISC_UDMA
+ * \brief Configurations of uDMA controller
  */
-int main(void)
-{
-	init_stdio_serial();
-	uint8_t rcv_buf[20];
-	int32_t rcv_cnt;
 
-	while (1) {
-		rcv_cnt = stdio_read(rcv_buf, sizeof(rcv_buf));
-		rcv_buf[rcv_cnt] = '\0';
-		if (rcv_cnt) {
-			EMBARC_PRINTF(".wav recevied");
-			EMBARC_PRINTF("%s", rcv_buf);
-		}
-	}
-}
+/**
+ * \addtogroup ARC_HAL_MISC_UDMA
+ * @{
+ */
+#ifndef _ARC_UDMA_CONFIG_H_
+#define _ARC_UDMA_CONFIG_H_
+
+#include "arc_feature_config.h"
+#include "arc_exception.h"
+
+/*------ Available uDMA driver configurations */
+#ifndef DMA_MULTI_IRQ
+/** Multiple interrupts for DMA */
+#define DMA_MULTI_IRQ			0
+#endif
+
+#ifndef CORE_DMAC_CHANNELS
+/** Total channel number of DMA */
+#define	CORE_DMAC_CHANNELS		2
+#endif
+
+#ifndef CORE_DMAC_REGISTERS
+/** Total register based channel number of DMA */
+#define	CORE_DMAC_REGISTERS		0
+#endif
+
+#ifndef DMA_IRQ_NUM_START
+/** DMA IRQ start vector */
+#define DMA_IRQ_NUM_START		20
+#endif
+
+#ifndef DMA_IRQ_PRIO
+/** DMA IRQ priority */
+#define DMA_IRQ_PRIO			(INT_PRI_MIN)
+#endif
+
+#ifndef CORE_DMAC_INTERNAL_VERSION
+/** Version of the DMA controller */
+#define CORE_DMAC_INTERNAL_VERSION		2
+#endif
+
+/*------ uDMA driver configurations end */
+
+#endif /* _ARC_UDMA_CONFIG_H_ */
+

@@ -27,25 +27,69 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
 --------------------------------------------- */
-#include "embARC.h"
-#include "embARC_debug.h"
-#include "embARC_syscalls.c"
 
 /**
- * \brief	Test hardware board without any peripheral
+ * \file
+ * \ingroup EMBARC_ASSERT
+ * \brief necessary definitions of assert
  */
-int main(void)
-{
-	init_stdio_serial();
-	uint8_t rcv_buf[20];
-	int32_t rcv_cnt;
 
-	while (1) {
-		rcv_cnt = stdio_read(rcv_buf, sizeof(rcv_buf));
-		rcv_buf[rcv_cnt] = '\0';
-		if (rcv_cnt) {
-			EMBARC_PRINTF(".wav recevied");
-			EMBARC_PRINTF("%s", rcv_buf);
-		}
-	}
+#ifndef _EMBARC_ASSERT_H_
+#define _EMBARC_ASSERT_H_
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#ifndef EMBARC_PRINTF
+	#ifdef MID_COMMON
+		#include "xprintf.h"
+		#define EMBARC_PRINTF xprintf
+	#else
+		#include <stdio.h>
+		#define EMBARC_PRINTF printf
+	#endif
+#endif
+
+#include "embARC_toolchain.h"
+
+extern void _exit_loop();
+
+#define ASSERT_FORMAT "%s: Line %d: assert(%s) failed.\r\n"
+#define HALT_FORMAT "%s: Line %d: halt reason:"
+
+
+Inline void embARC_abort(void)
+{
+	_exit_loop();
 }
+
+Inline void embARC_assert(const char *exptext, const char *file, uint32_t line)
+{
+	EMBARC_PRINTF(ASSERT_FORMAT, file, line, exptext);
+	_exit_loop();
+}
+
+Inline void embARC_halt(const char *exptext, const char *file, uint32_t line)
+{
+	EMBARC_PRINTF(HALT_FORMAT, file, line);
+	EMBARC_PRINTF("%s\r\n", exptext);
+	_exit_loop();
+}
+
+/* check whether the expr is true */
+#define EMBARC_ASSERT(expr) \
+		((void)(!(expr) ? (embARC_assert(#expr, __FILE__, __LINE__), 0) : 0))
+
+#define EMBARC_HALT(fmt, ...)	({ \
+			EMBARC_PRINTF(HALT_FORMAT, __FILE__, __LINE__); \
+			EMBARC_PRINTF(fmt, ##__VA_ARGS__); \
+			EMBARC_PRINTF("\r\n"); \
+			Asm("flag 1"); \
+		})
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif /* DEBUG_H_ */
