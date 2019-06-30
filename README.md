@@ -1,4 +1,4 @@
-## Voice magician
+## 聲音魔術師(Voice magician)
 資訊流通的世代裡，訊息的隱私和安全性尤屬我們極為關切和注重的議題， 國家要利用科技獲得敵國軍事機密，有心人事不擇手段要竊取公司機密抑或重要的傳輸檔案，為了防止資訊被盜取利用，我們這次研究的目標著重在實現接收遠端傳輸加密後的聲音，並且此聲音是夾帶雜訊且人類無法直接辨別的音源，藉由我們一系列設計IOTDK的開發板，我們得以獲取解密後的音檔，達到秘密傳輸以及不被偷聽的目的。
 * [Introduction](#introduction)
 	* [Function](#function)
@@ -26,16 +26,22 @@
 ### Required Hardware
 - 1 DesignWare ARC IoT Development Kit (IoTDK)
 - 1 Raspberry Pi (RPi)
+- 1 EW-7811UTC AC600雙頻USB迷你無線網路卡
 - 1 Notebook
 ### Required Software
 - MobaXterm
 - Digilent Adept software
 ### Hardware Connection
-1. 本裝置會由電腦傳送音檔至RPi，再將音訊資料傳至ARC做處理後回傳至電腦
-	- 將RPi的電源線接至電腦的USB孔
-	- 將RPi的UART0_TXD與ARC的I2S_RX
+1. 本裝置會由電腦遠端傳送音檔至RPi，再將音訊資料以有線的方式，傳至ARC做處理後回傳至電腦播放
+	- 將USB迷你無線網路卡接到RPi的任一個USB孔
+	- 將RPi和電腦連上同一個WiFi
+	- 將RPi的UART0_TXD與ARC的Arduino-IO0
+	- 將RPi的UART0_RXD與ARC的Arduino-IO1
+	- 將RPi的ground與ARC的Arduino-GND
+	- RPi和ARC需共用電源
 2. 裝置配置圖
 	![alt tag](https://i.imgur.com/GLmFCfa.jpg)
+	![alt tag](https://i.imgur.com/QO1cH0B.jpg)
 	
 ## User Manual
 ### Before Running This Application
@@ -43,7 +49,7 @@
 ### Run This Application
 //to do
 ## Demo Video
-[Video]
+[Youtube](https://youtu.be/6tQKfoc6kGY)
 
 
 
@@ -54,10 +60,8 @@
 - **Music** based on Uart protocol (Supports file umlimited songs)
 - **Alexa** Voice assistant, connecting and communicating with Wifi.
 - **CPU Loading** Calculate the power used by the board
-## Demo
+## test
 //to do 
 | Main page | Clock | Record |
 | -------- | -------- | -------- |
 | ![](https://imgur.com/gallery/YSJayCb)     
-## Link
-//to do 
