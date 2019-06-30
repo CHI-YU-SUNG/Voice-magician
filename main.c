@@ -1,4 +1,4 @@
-/* ------------------------------------------//
+/* ------------------------------------------
  * Copyright (c) 2019, Synopsys, Inc. All rights reserved.
 
  * Redistribution and use in source and binary forms, with or without modification,
@@ -52,9 +52,12 @@ int state=0;
 static int16_t input_buffer[INPUT_FRAME_SIZE * INPUT_CHANNELS_NUM * INPUT_BUFFERING_DEPTH];
 static uint32_t frame_position;
 extern uint32_t read_done;
+/*
 int test[]={
     0, 1, 2, 3, 4, 5
 };
+*/
+
 
 /** arc timer 0 interrupt routine */
 static void timer0_isr(void *ptr)
@@ -68,16 +71,11 @@ void timer0_delay_ms(int ms)
 {
 	t0 = 0;
 	//led enable
-
 	while(t0 < ms);
-	{
-		
-	
+	{	
+        //wait
 	}
-	
 }
-
-
 
 int main(void)
 {
@@ -126,6 +124,8 @@ int main(void)
          * TODO: add data frame processing here, use 'current_frame' pointer
          *  
          *    process(current_frame);
+         * 
+         * read("1.wav");
          *   
          */
          //EMBARC_PRINTF("\r%d \r\n",*current_frame);
