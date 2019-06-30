@@ -29,23 +29,42 @@
 --------------------------------------------- */
 #include "embARC.h"
 #include "embARC_debug.h"
-#include "embARC_syscalls.c"
+#include "embARC_syscalls.c"	//for dfss_uart
+#include "dev_pinmux.h"	//for io_arduino_config_uart
+#include <stdlib.h>		//for atoi
 
-/**
- * \brief	Test hardware board without any peripheral
- */
+#define input_array_size 100
+
 int main(void)
 {
-	init_stdio_serial();
-	uint8_t rcv_buf[20];
-	int32_t rcv_cnt;
+	char temp_int[20];
+	int temp_count = 0;
+	int input_int_array[input_array_size];
+	int input_count = 0;
+	char receive_buffer[1];
+	int receive_length;
+	io_arduino_config_uart(1);
+	DEV_UART_PTR dfss_uart_ptr = uart_get_dev(2);
+	dfss_uart_ptr -> uart_close();
+	dfss_uart_ptr -> uart_open(115200);
+	EMBARC_PRINTF(" open successfal\n");
 
 	while (1) {
-		rcv_cnt = stdio_read(rcv_buf, sizeof(rcv_buf));
-		rcv_buf[rcv_cnt] = '\0';
-		if (rcv_cnt) {
-			EMBARC_PRINTF(".wav recevied");
-			EMBARC_PRINTF("%s", rcv_buf);
+		receive_length = dfss_uart_ptr -> uart_read(receive_buffer, sizeof(receive_buffer));
+		if (receive_length) {
+			int compare = (int)receive_buffer[0];
+			if ((int)receive_buffer[0] == 'a'){
+				temp_int[temp_count] = '\0';
+				input_int_array[input_count] = atoi(temp_int);
+				input_count ++;
+				temp_count = 0;
+				EMBARC_PRINTF("%d\n", input_int_array[input_count-1]);
+				continue;
+			}
+			else{
+				temp_int[temp_count] = receive_buffer[0];
+				temp_count ++;
+			}
 		}
 	}
 }

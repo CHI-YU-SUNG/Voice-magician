@@ -4,7 +4,5 @@ Info : clock speed 8000 kHz
 Info : JTAG tap: arc-em.cpu tap/device found: 0x200444b1 (mfg: 0x258, part: 0x0044, ver: 0x2)
 Info : JTAG tap: arc-em.cpu tap/device found: 0x200444b1 (mfg: 0x258, part: 0x0044, ver: 0x2)
 target state: halted
-target state: halted
 Info : accepting 'gdb' connection from pipe
-undefined debug reason 7 - target needs reset
 Info : dropped 'gdb' connection
