@@ -53,15 +53,4 @@
 
 
 
-- **粗體字**
-- **Sleep monitoring** 一般字體
-- Communicate with **APP**
-- **Alarm Clock** Setting 
-- **Music** based on Uart protocol (Supports file umlimited songs)
-- **Alexa** Voice assistant, connecting and communicating with Wifi.
-- **CPU Loading** Calculate the power used by the board
-## test
-//to do 
-| Main page | Clock | Record |
-| -------- | -------- | -------- |
-| ![](https://imgur.com/gallery/YSJayCb)     
+-
