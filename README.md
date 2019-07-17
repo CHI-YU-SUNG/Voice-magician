@@ -14,6 +14,7 @@
 
 ## Introduction
 這個裝置能夠將原本用高頻做聲音加密的訊號還原。
+
 ### Function
 將聲音訊號的高頻部分濾除，留下含有效訊息的低頻部分，以達到解密效果。
 ### System Architecture
@@ -47,7 +48,8 @@
 ### Before Running This Application
 下載GitHub上的檔案至電腦中
 ### Run This Application
-//to do
+* Compile: $ make BOARD=iotdk TOOLCHAIN=gnu 
+* Run: $ make BOARD=iotdk TOOLCHAIN=gnu run
 ## Demo Video
 [Youtube](https://youtu.be/6tQKfoc6kGY)
 
