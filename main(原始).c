@@ -30,31 +30,36 @@
 #include "embARC.h"
 #include "embARC_debug.h"
 #include "embARC_syscalls.c"	//for dfss_uart
-#include "dev_pinmux.h"	//for io_arduino_config_uart //board\iotdk\drivers\mux\mux.c
+#include "dev_pinmux.h"	//for io_arduino_config_uart
 #include <stdlib.h>		//for atoi
 
-#define input_array_size 100	//size of input_int_array
-int input_count;	//record the amount of numbers in input_int_array
+#define input_array_size 100
 
-int received_function(DEV_UART_PTR dfss_uart_ptr){
-	char temp_int[20];	//temporary store received number
-	int temp_count = 0;	//length of receivedd number in temp_int
-	int input_int_array[input_array_size];	//store received numbers in this array
-	input_count = 0;
+int main(void)
+{
+	char temp_int[20];
+	int temp_count = 0;
+	int input_int_array[input_array_size];
+	int input_count = 0;
 	char receive_buffer[1];
 	int receive_length;
+	io_arduino_config_uart(1);
+	DEV_UART_PTR dfss_uart_ptr = uart_get_dev(2);
+	dfss_uart_ptr -> uart_close();
+	dfss_uart_ptr -> uart_open(115200);
+	EMBARC_PRINTF(" open successfal\n");
+
 	while (1) {
 		receive_length = dfss_uart_ptr -> uart_read(receive_buffer, sizeof(receive_buffer));
 		if (receive_length) {
+			int compare = (int)receive_buffer[0];
 			if ((int)receive_buffer[0] == 'a'){
 				temp_int[temp_count] = '\0';
 				input_int_array[input_count] = atoi(temp_int);
 				input_count ++;
 				temp_count = 0;
+				EMBARC_PRINTF("%d\n", input_int_array[input_count-1]);
 				continue;
-			}
-			else if ((int)receive_buffer[0] == 'b'){	//stop receive
-				return input_int_array;
 			}
 			else{
 				temp_int[temp_count] = receive_buffer[0];
@@ -62,27 +67,4 @@ int received_function(DEV_UART_PTR dfss_uart_ptr){
 			}
 		}
 	}
-}
-
-bool transmmit_function(DEV_UART_PTR dfss_uart_ptr, int *transmit_array){
-	for (int i = 0; i < input_count; i++)
-		dfss_uart_ptr -> uart_write(transmit_array[i], sizeof(transmit_array[i]));
-	}
-	return true;
-}
-
-int main(void)
-{
-	/*uart initialize*/
-	io_arduino_config_uart(1);	//enable arduino uart port
-	DEV_UART_PTR dfss_uart_ptr = uart_get_dev(2);	//use dfss_uart_2
-	dfss_uart_ptr -> uart_close();
-	dfss_uart_ptr -> uart_open(115200);
-	EMBARC_PRINTF(" open successful\n");
-
-	int *my_array = received_function(dfss_uart_ptr);
-	for (int i=0; i < input_count; i++){
-		EMBARC_PRINTF("%d th = %d\n", i, my_array[i]);
-	}
-	//transmmit_function(dfss_uart_ptr, my_array);
 }
