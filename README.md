@@ -27,14 +27,12 @@
 ### Required Hardware
 - 1 DesignWare ARC IoT Development Kit (IoTDK)
 - 1 Raspberry Pi (RPi)
-- 1 EW-7811UTC AC600雙頻USB迷你無線網路卡
 - 1 Notebook
 ### Required Software
 - MobaXterm
 - Digilent Adept software
 ### Hardware Connection
-1. 本裝置會由電腦遠端傳送音檔至RPi，再將音訊資料以有線的方式，傳至ARC做處理後回傳至電腦播放
-	- 將USB迷你無線網路卡接到RPi的任一個USB孔
+1. 本裝置會由電腦以無線網路的方式傳送音檔至RPi，再將音訊資料以有線串列傳輸，傳至ARC做處理後回傳至RPi，再存回電腦播放
 	- 將RPi和電腦連上同一個WiFi
 	- 將RPi的UART0_TXD與ARC的Arduino-IO0
 	- 將RPi的UART0_RXD與ARC的Arduino-IO1
@@ -46,13 +44,19 @@
 	
 ## User Manual
 ### Before Running This Application
-下載GitHub上的檔案至電腦中
+下載GitHub上的檔案
+1. RPi:
+	- rpi資料夾中的voiceprocess.py檔為python執行檔，請置於RPi中的任意處。建議存於桌面。
+	- 將欲解密的音檔存放在跟voiceprocess.py同目錄下
+2. notebook:
+	- step1:clone https://github.com/foss-for-synopsys-dwc-arc-processors/embarc_osp.git
+	- step2:clone https://github.com/CHI-YU-SUNG/Voice-magician.git
+	- step3:將"voice_magic"資料夾移至"embarc_osp/example/baremetal/"目錄下
 ### Run This Application
-* Compile: $ make BOARD=iotdk TOOLCHAIN=gnu 
-* Run: $ make BOARD=iotdk TOOLCHAIN=gnu run
+step1: notebook
+	* 在voice_magic目錄下開啟terminal
+	* 執行:make BOARD=iotdk TOOLCHAIN=gnu run
+step2: RPi
+	* 在voiceprocess.py所在目錄下執行:python voiceprocess.py
 ## Demo Video
 [Youtube](https://youtu.be/6tQKfoc6kGY)
-
-
-
--
