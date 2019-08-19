@@ -39,10 +39,14 @@
 int last_layer = 0;	//record the last layer in int_array
 int last_count;	//record the last element in last_layer th layer in int_array
 int int_array[layer_size][int_array_size];	//store received numbers in this array
-int input_channel_size;	//number of total input element
+int input_channel_size = 0;	//number of total input element
 int output_channel_size;	//number of total output element
 int windowSize = 1;	//different by input voice
 int batch_size = 1;
+//int input[layer_size+1][int_array_size];
+int previous=0;
+int pre_sum1=0;
+int pre_sum2=0;
 
 void received_function(DEV_UART_PTR dfss_uart_ptr){
 	char temp_int[20];	//temporary store received number
@@ -62,12 +66,14 @@ void received_function(DEV_UART_PTR dfss_uart_ptr){
 					printf("input batch size = %d\n", batch_size);
 					second = true;
 					first = false;
+					temp_count = 0;
 					continue;
 				}
 				else if (second == true){
 					windowSize = atoi(temp_int);
 					printf("windowSize = %d\n", windowSize);
 					second = false;
+					temp_count = 0;
 					continue;
 				}
 				int_array[last_layer][last_count] = atoi(temp_int);
@@ -93,39 +99,71 @@ void received_function(DEV_UART_PTR dfss_uart_ptr){
 	}
 }
 
-void runningsum (){	// insert "0" to the first element, and do running sum
-	input_channel_size = input_channel_size + 1;
-	int Sum = 0;
-	int originalNumber;
-	for (int number_count = 0; number_count < input_channel_size; number_count++){
-		originalNumber = int_array[number_count / int_array_size][number_count % int_array_size];
-		int_array[number_count / int_array_size)][number_count % int_array_size] = Sum;
-		Sum = Sum + originalNumber;
+int array_insert (int insertNumber, int index, int elements){
+	int lastNumber, nowNumber;
+	int x,y;
+	for (int number_count = 0; number_count < elements + 1; number_count++){
+		if (number_count < index)
+			continue;
+		x = number_count / int_array_size;
+		y = number_count % int_array_size;
+		if (number_count == index){
+			lastNumber = int_array[x][y];
+			int_array[x][y] = insertNumber;
+		}
+		else {
+			nowNumber = int_array[x][y];
+			int_array[x][y] = lastNumber;
+			lastNumber = nowNumber;
+		}
 	}
+	return (elements + 1);
 }
-void array_sub (int bias){
+int runningsum (int Sum, int elements){
+	int x,y;
 	for (int number_count = 0; number_count < elements; number_count++){
-		int_array[number_count / int_array_size][number_count % int_array_size] /= Denominator;
+		x = number_count / int_array_size;
+		y = number_count % int_array_size;
+		int_array[x][y] += Sum;
+		Sum = int_array[x][y];
 	}
+	return Sum;
 }
-void array_divide (int Denominator, int elements){
-	for (int number_count = 0; number_count < elements; number_count++)
-		int_array[number_count / int_array_size][number_count % int_array_size] /= Denominator;
+void array_sub_divide (int bias, int Denominator, int elements, int temp_array[], int *last_temp){
+	int x1, y1;
+	int x2, y2;
+	for (int number_count = 0; number_count < elements; number_count++){
+		x1 = (number_count + bias) / int_array_size;
+		y1 = (number_count + bias) % int_array_size;
+		x2 = number_count / int_array_size;
+		y2 = number_count % int_array_size;
+		int_array[x2][y2] = (int_array[x1][y1] - int_array[x2][y2])/Denominator;
+	}
+	for (int number_count = elements, last_temp = 0; number_count < elements + bias; number_count++, last_temp++)
+		temp_array[last_temp] = int_array[number_count / int_array_size][number_count % int_array_size];
 }
-
-void possess(){
-	int input[layer_size+1][int_array_size];
+/*
+void possess(int nowbatch){
+	
 	double runningsum_one[layer_size+1][int_array_size];
 	double runningsum_two[layer_size+1][int_array_size];
-	input[0][0]=0;
-	runningsum_one[0][0]=0;
-	runningsum_two[0][0]=0;
+	if(nowbatch==0){
+		//set first matrix
+		input[0][0]=0;
+		runningsum_one[0][0]=0;
+		runningsum_two[0][0]=0;
+	}else{
+		input[0][0]=previous;
+		runningsum_one[0][0]=pre_sum1;
+		runningsum_two[0][0]=pre_sum2;//non define pre_sum1 and pre_sum2
+	}
+	
 	for(int i=0;i<layer_size;i++){
 		for(int j=0;j<int_array_size;j++){
 			for(int m=0;m<i;m++){
 				for(int n=0;n<j;n++){
 					if(j+1==int_array_size)
-						input[i+1][0]+=int_array[m][n];
+						previous+=int_array[m][n];//bug
 					else
 						input[i][j+1]+=int_array[m][n];
 				}
@@ -133,49 +171,67 @@ void possess(){
 		}
 	}
 	//去尾(可省略)
-	for(int i=0;i<layer_size+1;i++)
-	{	
-		for(int j=0;j<int_array_size;j++)
-		{	
-			if(i==layer_size && j>(int_array_size-1)-windowSize-1)
-				runningsum_one[i+1][j]=0;
-			else
-				runningsum_one[i][j]=input[i][j];
-						
-		}
+	if(nowbatch == batch_size){
+		for(int i=0;i<layer_size+1;i++){	
+			for(int j=0;j<int_array_size;j++){	
+				if(i==layer_size && j>(int_array_size-1)-windowSize-1)
+					runningsum_one[i+1][j]=0;
+				else
+					runningsum_one[i][j]=input[i][j];						
+			}
+		}	
 	}
+	
 	//去頭
-	for(int i=0;i<layer_size;i++)
-	{	
-		for(int j=0;j<int_array_size;j++)
-		{	
-			if(j+windowSize>int_array_size)
-				runningsum_two[i][j]=input[i+1][j+windowSize-int_array_size];
-			else
-				runningsum_two[i][j]=input[i][j+windowSize];				
+	if(nowbatch ==0){
+		for(int i=0;i<layer_size;i++){	
+			for(int j=0;j<int_array_size;j++){	
+				if(j+windowSize>int_array_size)
+					runningsum_two[i][j]=input[i+1][j+windowSize-int_array_size];
+				else
+					runningsum_two[i][j]=input[i][j+windowSize];				
+			}
 		}
 	}
+	
 	
 	//相減相除
-	for(int i=0;i<layer_size;i++)
-		for(int j=0;j<int_array_size;j++)
-			if(i==layer_size && j>int_array_size-windowSize)
-				int_array[i][j]=0;
-			else	
-				int_array[i][j]=(int)(runningsum_two[i][j]-runningsum_one[i][j])/windowSize;
-}
-
+	if(nowbatch == batch_size){
+		for(int i=0;i<layer_size;i++)
+			for(int j=0;j<int_array_size;j++)
+				if(i==layer_size && j>int_array_size-windowSize)
+					int_array[i][j]=0;
+				else	
+					int_array[i][j]=(int)(runningsum_two[i][j]-runningsum_one[i][j])/windowSize;
+	}
+	else{
+		int_array[i][j]=(int)(runningsum_two[i][j]-runningsum_one[i][j])/windowSize;
+	
+	}
+*/
 void transmmit_function(DEV_UART_PTR dfss_uart_ptr){
-	char trans_buffer[10];
-	/*
+	char trans_buffer[20];
+	int_array[0][0]=123;
+	int_array[0][1]=54;
+	int_array[0][2]=21654;
+	output_channel_size = 2;
+	last_layer=0;
+	last_count=3;
+	/*transmit data*/
 	int nowTrans;
 	for (int number_count = 0; number_count < output_channel_size; number_count++){
-		nowTrans = int_array[number_count / int_array_size)][number_count % int_array_size];
-		sprintf (trans_buffer, "%d\n", nowTrans);
-		EMBARC_PRINTF("transmit %s", trans_buffer);
+		nowTrans = 54;
+		sprintf (trans_buffer, "%d\n",  nowTrans);
+		printf("transmit %d th = %s", number_count, trans_buffer);
+		dfss_uart_ptr -> uart_close();
 		dfss_uart_ptr -> uart_write(trans_buffer, sizeof(trans_buffer));
-	}*/
-	
+	}
+	/*transmit stop flag */
+	/*
+	sprintf (trans_buffer, "end\n");
+	printf("transmit %s", trans_buffer);
+	dfss_uart_ptr -> uart_write(trans_buffer, sizeof(trans_buffer));
+	/*
 	for (int i = 0; i < last_layer; i++){
 		for (int j = 0; j < int_array_size; j++){
 			sprintf (trans_buffer, "%d\n", int_array[i][j]);
@@ -188,7 +244,7 @@ void transmmit_function(DEV_UART_PTR dfss_uart_ptr){
 		EMBARC_PRINTF("transmit %s", trans_buffer);
 		dfss_uart_ptr -> uart_write(trans_buffer, sizeof(trans_buffer));
 	}
-
+*/
 	return;
 }
 
@@ -215,7 +271,6 @@ void transmmit_function(DEV_UART_PTR dfss_uart_ptr){
 	
 }*/  
    
-
 int main(void)
 {
 	/*uart initialize*/
@@ -223,32 +278,53 @@ int main(void)
 	DEV_UART_PTR dfss_uart_ptr = uart_get_dev(2);	//use dfss_uart_2
 	dfss_uart_ptr -> uart_close();
 	dfss_uart_ptr -> uart_open(115200);
-	EMBARC_PRINTF(" open successful\n");
+	printf(" open successful\n");
+	//transmmit_function(dfss_uart_ptr);
+	int Sum;
 
 	while (true){
+		Sum = 0;
 		for (int nowbatch = 0; nowbatch < batch_size; nowbatch++){
 			/*received data*/
 			received_function(dfss_uart_ptr);
-			for (int i=0; i < last_count; i++){
-				EMBARC_PRINTF("%d th = %d\n", i, int_array[i]);
+			/*
+			for (int number_count = 0; number_count < input_channel_size; number_count++){
+				printf ("%d th = %d\n", number_count, int_array[number_count / int_array_size][number_count % int_array_size]);
 			}
+			*/
+			printf ("total number = %d\n", input_channel_size);
+			//output_channel_size = input_channel_size;
 
 			/*prossess*/
-			possess();
-			/*
-			runningsum();
-			output_channel_size = input_channel_size - windowSize;
-			array_sub(windowSize);
-			array_divide(windowSize, output_channel_size);*/
+			//possess();
+
+			int temp_array[windowSize];
+			int last_temp = 0;
+			
+			if (nowbatch == 0){
+				output_channel_size = array_insert(0,0,input_channel_size);
+				Sum = runningsum(int_array[0][0], output_channel_size);
+			}
+			else {
+				Sum = runningsum(Sum, input_channel_size);
+				if (last_temp > 0)
+					for (int i = 0; i < last_temp; i++)
+						output_channel_size = array_insert(temp_array[last_temp - 1 - i], 0, input_channel_size);
+				if (nowbatch == batch_size - 1)
+					output_channel_size -= windowSize;
+			}
+			output_channel_size -= windowSize;
+			array_sub_divide(windowSize, windowSize, output_channel_size, temp_array, &last_temp);
 
 			//lowPassFrequency(output_double_array, 2);
-			
-			/*for (int i=0; i < last_count; i++){
+			/*
+			for (int i=0; i < last_count; i++){
 				EMBARC_PRINTF("output:%d th = %f\n", i, output_double_array[i]);
-			}*/
+				
+			}
+			*/
 			
-			transmmit_function(dfss_uart_ptr);
+			//transmmit_function(dfss_uart_ptr);
 		}
 	}
-	
 }
